@@ -8,20 +8,26 @@ import time
 import os
 import re
 
-# Переменные для логина и пароля
+# Log In
 login = 'abris@abrisplus.ru'
 password = '123456'
 
-# Базовый URL для изображений
+# Main site to tale IMG
 base_image_url = "https://www.abrisplus.ru"
 
-# Текстовые данные для поиска элементов на странице
-search_query = 'Химические реактивы и реагенты'  # Текст для поиска категории товара
-country_option_text = "Россия"  # Текст опции выбора страны
-your_brand = "АБРИС+"  # Текст для бренда
-group_input_placeholder = "Цитологические красители и наборы"  # Placeholder для поля группировка
-minimal_input_value = '1'  # Значение для ввода минимального количества товара
-dropdown_option_text = "упак. (упаковка)"  # Текст опции для выпадающего списка
+# Auto-fill input to boxes, dropdown and radio                    # INPUTS
+search_query = 'Клинико-аналитические инструменты'                # Category
+country_option_text = "Россия"                                    # County
+your_brand = "АБРИС+"                                             # Brand
+group_input_placeholder = "Анализаторы мочи"                      # Group
+minimal_input_value = '1'                                         # Minimum quantity
+dropdown_option_text = "шт."                                      # Unit
+
+# divs. Take information                                                # LINKS
+main_body_tag, main_body_class = 'div', 'span8'                         # Main body
+name_product_tag = ("h1")                                               # Name
+description_p_tag, description_attr = 'p', {'itemprop': 'description'}  # Description
+img_tag, img_style = 'img', {'style': 'opacity:0'}                      # img
 
 
 def download_image(img_url, img_name):
@@ -58,32 +64,37 @@ def login_to_website(driver):
 
 def fill_product_info(driver, product_url):
     try:
-        # Get product information from the provided URL
         response = requests.get(product_url)
         soup = BeautifulSoup(response.text, "html.parser")
-        main_class = soup.find('div', class_="span8")  # MAIN BODY
+        main_class = soup.find(main_body_tag, class_=main_body_class)  # MAIN BODY
 
-        name_p_element = main_class.find('h1')  # НАЗВАНИЕ PRODUCT
-        if name_p_element:
-            name_p = name_p_element.get_text()
-        else:
-            print(f"Название продукта не найдено на странице: {product_url}")
-            return
+        name_p_element = main_class.find(name_product_tag)  # NAME PRODUCT
+        name_p = name_p_element.get_text() if name_p_element else None
 
-        description_element = main_class.find('div', class_='card-details-box visible')  # DESCRIPTION PRODUCT
-        description = description_element.get_text() if description_element else "Описание не найдено"
+        description_element = main_class.find(description_p_tag, attrs=description_attr)  # DESCRIPTION PRODUCT
+        description = description_element.get_text() if description_element else None
 
         # Find the image URL
-        img_element = main_class.find('img', {'style': 'opacity:0'})  # PICTURE PRODUCT
-        img_url = f"{base_image_url}{img_element['src']}" if img_element else None
-        img_name = "product_image.jpg"
-
-        if img_url:
+        img_element = main_class.find(img_tag, img_style)
+        if img_element:
+            img_url = f"{base_image_url}{img_element['src']}"
+            img_name = "product_image.jpg"
             download_image(img_url, img_name)
 
-        # Filling product fields
+        # For BIZKIM auto-fill
         driver.get('https://bizkim.uz/ru/add-product')
+        login_link = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.LINK_TEXT, 'Войдите')))
+        login_link.click()
+        login_window = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'login')))
+        username_field = driver.find_element(By.ID, 'auth_email_tel')
+        password_field = driver.find_element(By.ID, 'auth_psw')
+        username_field.send_keys(login)
+        password_field.send_keys(password)
+        login_button_inside = login_window.find_element(By.XPATH, '//button[contains(text(), "Войти")]')
+        login_button_inside.click()
+        time.sleep(3)
 
+        # Filling product fields
         search_field = driver.find_element(By.ID, 'searchq2')
         search_field.send_keys(search_query)
         time.sleep(5)
@@ -100,10 +111,9 @@ def fill_product_info(driver, product_url):
         description_css_selector = '.nicEdit-main'
         description_field = driver.find_element(By.CSS_SELECTOR, description_css_selector)
         description_field.send_keys(description)
-        time.sleep(2)
+        time.sleep(1)
 
         country_dropdown = driver.find_element(By.ID, 'select2-chosen-1')
-        time.sleep(1)
         country_dropdown.click()
         time.sleep(1)
         country_options = driver.find_elements(By.XPATH, '//ul[@id="select2-results-1"]/li[@role="presentation"]')
@@ -117,19 +127,16 @@ def fill_product_info(driver, product_url):
         additional_fields_button.click()
         time.sleep(1)
 
-        # Заполнение поля группировки
         group_input = driver.find_element(By.NAME, 'p_gruppa_new')
         group_input.send_keys(group_input_placeholder)
 
         minimal_input = driver.find_element(By.NAME, 'p_minimal')
         minimal_input.send_keys(minimal_input_value)
 
-        # Находим поле ввода бренда
         brand_input = driver.find_element(By.NAME, 'p_brand')
         brand_input.clear()
         brand_input.send_keys(your_brand)
 
-        # Единица измерение
         driver.find_element(By.ID, 'select2-chosen-4').click()
         options = driver.find_elements(By.CSS_SELECTOR, '.select2-results li')
         for option in options:
@@ -137,12 +144,12 @@ def fill_product_info(driver, product_url):
                 option.click()
                 break
 
-        radio_button = driver.find_element(By.CSS_SELECTOR, 'input[name="p_radio_price"][value="3"]')
-        radio_button.click()
+        # Default mark
+        # radio_button = driver.find_element(By.CSS_SELECTOR, 'input[name="p_radio_price"][value="3"]')
+        # radio_button.click()
 
         # Uploading the product image
         if img_url and os.path.exists(img_name):
-            # Click the image upload element to trigger the file input
             image_upload_element = driver.find_element(By.ID, 'edit_foto1')
             image_upload_element.click()
 
@@ -155,7 +162,7 @@ def fill_product_info(driver, product_url):
             submit_button = driver.find_element(By.XPATH, '//button[contains(text(), "Отправить на модерацию")]')
             submit_button.click()
 
-            time.sleep(3)
+            time.sleep(2)
 
     except Exception as e:
         print("Произошла ошибка при обработке товара по URL {}: {}".format(product_url, e))
@@ -163,7 +170,7 @@ def fill_product_info(driver, product_url):
 
 def upload_multiple_products():
     links_input = input("Введите URL'ы продуктов, разделенные пробелами: ")
-    product_urls = links_input.split()  # Разбиваем строку по пробелам
+    product_urls = links_input.split()
 
     # Set up the driver once
     chrome_options = webdriver.ChromeOptions()
@@ -174,7 +181,7 @@ def upload_multiple_products():
     # Log in once
     if login_to_website(driver):
         for product_url in product_urls:
-            fill_product_info(driver, product_url.strip())  # Удаляем лишние пробелы и запускаем загрузку
+            fill_product_info(driver, product_url.strip())
 
             # Open a new tab and close the current one
             driver.execute_script("window.open('');")
