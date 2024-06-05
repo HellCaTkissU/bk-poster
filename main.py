@@ -26,7 +26,7 @@ dropdown_option_text = "шт."                                      # Unit
 # divs. Take information                                                # LINKS
 main_body_tag, main_body_class = 'div', 'span8'                         # Main body
 name_product_tag = ("h1")                                               # Name
-description_p_tag, description_attr = 'p', {'itemprop': 'description'}  # Description
+description_p_tag, description_attr = 'div', {'class': 'card-details-box visible'}  # Description
 img_tag, img_style = 'img', {'style': 'opacity:0'}                      # img
 
 
@@ -64,6 +64,7 @@ def login_to_website(driver):
 
 def fill_product_info(driver, product_url):
     try:
+        # Get product information from the provided URL
         response = requests.get(product_url)
         soup = BeautifulSoup(response.text, "html.parser")
         main_class = soup.find(main_body_tag, class_=main_body_class)  # MAIN BODY
@@ -81,25 +82,13 @@ def fill_product_info(driver, product_url):
             img_name = "product_image.jpg"
             download_image(img_url, img_name)
 
-        # For BIZKIM auto-fill
-        driver.get('https://bizkim.uz/ru/add-product')
-        login_link = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.LINK_TEXT, 'Войдите')))
-        login_link.click()
-        login_window = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'login')))
-        username_field = driver.find_element(By.ID, 'auth_email_tel')
-        password_field = driver.find_element(By.ID, 'auth_psw')
-        username_field.send_keys(login)
-        password_field.send_keys(password)
-        login_button_inside = login_window.find_element(By.XPATH, '//button[contains(text(), "Войти")]')
-        login_button_inside.click()
-        time.sleep(3)
-
         # Filling product fields
         search_field = driver.find_element(By.ID, 'searchq2')
         search_field.send_keys(search_query)
         time.sleep(5)
 
         category = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, 'bread_piece')))
+        time.sleep(1)
         category.click()
 
         product_name_xpath = '//input[@name="p_name"]'
@@ -128,7 +117,7 @@ def fill_product_info(driver, product_url):
         time.sleep(1)
 
         group_input = driver.find_element(By.NAME, 'p_gruppa_new')
-        group_input.send_keys(group_input_placeholder)
+        group_input.send_keys(group_input_placeholder)  # Используйте group_input_placeholder для вставки слова
 
         minimal_input = driver.find_element(By.NAME, 'p_minimal')
         minimal_input.send_keys(minimal_input_value)
@@ -144,9 +133,8 @@ def fill_product_info(driver, product_url):
                 option.click()
                 break
 
-        # Default mark
-        # radio_button = driver.find_element(By.CSS_SELECTOR, 'input[name="p_radio_price"][value="3"]')
-        # radio_button.click()
+        radio_button = driver.find_element(By.CSS_SELECTOR, 'input[name="p_radio_price"][value="3"]')
+        radio_button.click()
 
         # Uploading the product image
         if img_url and os.path.exists(img_name):
@@ -170,7 +158,7 @@ def fill_product_info(driver, product_url):
 
 def upload_multiple_products():
     links_input = input("Введите URL'ы продуктов, разделенные пробелами: ")
-    product_urls = links_input.split()
+    product_urls = links_input.split()  # Разбиваем строку по пробелам
 
     # Set up the driver once
     chrome_options = webdriver.ChromeOptions()
@@ -181,7 +169,7 @@ def upload_multiple_products():
     # Log in once
     if login_to_website(driver):
         for product_url in product_urls:
-            fill_product_info(driver, product_url.strip())
+            fill_product_info(driver, product_url.strip())  # Удаляем лишние пробелы и запускаем загрузку
 
             # Open a new tab and close the current one
             driver.execute_script("window.open('');")
