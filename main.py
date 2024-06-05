@@ -19,14 +19,17 @@ base_image_url = "https://www.abrisplus.ru"
 search_query = 'Клинико-аналитические инструменты'                # Category
 country_option_text = "Россия"                                    # County
 your_brand = "АБРИС+"                                             # Brand
-group_input_placeholder = "Анализаторы мочи"                      # Group
+group_input_placeholder = "АВТОМАТИЧЕСКИЕ АНАЛИЗАТОРЫ".capitalize()                      # Group
 minimal_input_value = '1'                                         # Minimum quantity
 dropdown_option_text = "шт."                                      # Unit
+
+group_input_placeholder = group_input_placeholder.capitalize()
+group_input_placeholder = ' '.join([group_input_placeholder.split()[0]] + [word.lower() for word in group_input_placeholder.split()[1:]])
 
 # divs. Take information                                                # LINKS
 main_body_tag, main_body_class = 'div', 'span8'                         # Main body
 name_product_tag = ("h1")                                               # Name
-description_p_tag, description_attr = 'div', {'class': 'card-details-box visible'}  # Description
+description_p_tag, description_attr = 'p', {'itemprop': 'description'}  # Description
 img_tag, img_style = 'img', {'style': 'opacity:0'}                      # img
 
 
@@ -40,7 +43,16 @@ def download_image(img_url, img_name):
 
 def normalize_product_name(name):
     words = re.findall(r"[\w+—-]+|[.,!?;]", name)
-    return ' '.join(word.capitalize() if word.isalnum() else word for word in words)
+
+    normalized_words = [word.capitalize() for word in words]
+
+    for i in range(1, len(normalized_words)):
+        if '-' in normalized_words[i]:
+            parts = normalized_words[i].split('-')
+            capitalized_parts = [part.capitalize() for part in parts]
+            normalized_words[i] = '-'.join(capitalized_parts)
+    return ' '.join(normalized_words)
+
 
 
 def login_to_website(driver):
@@ -71,6 +83,7 @@ def fill_product_info(driver, product_url):
 
         name_p_element = main_class.find(name_product_tag)  # NAME PRODUCT
         name_p = name_p_element.get_text() if name_p_element else None
+        normalized_name = normalize_product_name(name_p)
 
         description_element = main_class.find(description_p_tag, attrs=description_attr)  # DESCRIPTION PRODUCT
         description = description_element.get_text() if description_element else None
