@@ -133,8 +133,9 @@ def fill_product_info(driver, product_url):
                 option.click()
                 break
 
-        radio_button = driver.find_element(By.CSS_SELECTOR, 'input[name="p_radio_price"][value="3"]')
-        radio_button.click()
+        # Deafult mark on
+        # radio_button = driver.find_element(By.CSS_SELECTOR, 'input[name="p_radio_price"][value="3"]')
+        # radio_button.click()
 
         # Uploading the product image
         if img_url and os.path.exists(img_name):
