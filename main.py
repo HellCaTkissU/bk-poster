@@ -19,7 +19,7 @@ base_image_url = "https://www.abrisplus.ru"
 search_query = 'Клинико-аналитические инструменты'                # Category
 country_option_text = "Россия"                                    # County
 your_brand = "АБРИС+"                                             # Brand
-group_input_placeholder = "АВТОМАТИЧЕСКИЕ АНАЛИЗАТОРЫ".capitalize()                      # Group
+group_input_placeholder = "ПОЛУАВТОМАТИЧЕСКИЕ ИММУНОФЕРМЕНТНЫЕ АНАЛИЗАТОРЫ".capitalize()                      # Group
 minimal_input_value = '1'                                         # Minimum quantity
 dropdown_option_text = "шт."                                      # Unit
 
@@ -54,7 +54,6 @@ def normalize_product_name(name):
     return ' '.join(normalized_words)
 
 
-
 def login_to_website(driver):
     try:
         driver.get('https://bizkim.uz/ru/add-product')
@@ -79,13 +78,13 @@ def fill_product_info(driver, product_url):
         # Get product information from the provided URL
         response = requests.get(product_url)
         soup = BeautifulSoup(response.text, "html.parser")
-        main_class = soup.find(main_body_tag, class_=main_body_class)  # MAIN BODY
+        main_class = soup.find(main_body_tag, class_=main_body_class)                       # MAIN BODY
 
-        name_p_element = main_class.find(name_product_tag)  # NAME PRODUCT
+        name_p_element = main_class.find(name_product_tag)                                  # NAME PRODUCT
         name_p = name_p_element.get_text() if name_p_element else None
         normalized_name = normalize_product_name(name_p)
 
-        description_element = main_class.find(description_p_tag, attrs=description_attr)  # DESCRIPTION PRODUCT
+        description_element = main_class.find(description_p_tag, attrs=description_attr)    # DESCRIPTION PRODUCT
         description = description_element.get_text() if description_element else None
 
         # Find the image URL
@@ -130,7 +129,7 @@ def fill_product_info(driver, product_url):
         time.sleep(1)
 
         group_input = driver.find_element(By.NAME, 'p_gruppa_new')
-        group_input.send_keys(group_input_placeholder)  # Используйте group_input_placeholder для вставки слова
+        group_input.send_keys(group_input_placeholder)
 
         minimal_input = driver.find_element(By.NAME, 'p_minimal')
         minimal_input.send_keys(minimal_input_value)
@@ -172,9 +171,10 @@ def fill_product_info(driver, product_url):
 
 def upload_multiple_products():
     links_input = input("Введите URL'ы продуктов, разделенные пробелами: ")
-    product_urls = links_input.split()  # Разбиваем строку по пробелам
+    product_urls = links_input.split()
 
-    # Set up the driver once
+    print('\n\nRunning...')
+
     chrome_options = webdriver.ChromeOptions()
     chrome_options.binary_location = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     driver = webdriver.Chrome(options=chrome_options)
@@ -183,7 +183,7 @@ def upload_multiple_products():
     # Log in once
     if login_to_website(driver):
         for product_url in product_urls:
-            fill_product_info(driver, product_url.strip())  # Удаляем лишние пробелы и запускаем загрузку
+            fill_product_info(driver, product_url.strip())
 
             # Open a new tab and close the current one
             driver.execute_script("window.open('');")
@@ -194,6 +194,8 @@ def upload_multiple_products():
             driver.switch_to.window(driver.window_handles[-1])
 
     driver.quit()
+
+    print('\n\nDone!')
 
 
 upload_multiple_products()
