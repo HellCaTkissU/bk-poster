@@ -19,7 +19,7 @@ base_image_url = "https://www.abrisplus.ru"
 search_query = 'Другие медицинские приборы, инструменты и оборудования'                # Category
 country_option_text = "Россия"                                    # County
 your_brand = "АБРИС+"                                             # Brand
-group_input_placeholder = "Контейнеры для переноски пробирок".capitalize()                      # Group
+group_input_placeholder = "Бесприборная экспресс-диагностика на наркотики".capitalize()                      # Group
 minimal_input_value = '1'                                         # Minimum quantity
 dropdown_option_text = "шт."                                      # Unit
 
@@ -27,9 +27,9 @@ group_input_placeholder = group_input_placeholder.capitalize()
 group_input_placeholder = ' '.join([group_input_placeholder.split()[0]] + [word.lower() for word in group_input_placeholder.split()[1:]])
 
 # divs. Take information                                                # LINKS
-main_body_tag, main_body_class = 'div', 'catalog'                         # Main body
-name_product_tag = "h2"                                               # Name
-description_p_tag, description_attr = 'div', {'class': 'card-details-box visible'}  # Description
+main_body_tag, main_body_class = 'div', 'catalog'                       # Main body
+name_product_tags = ["h2", "h1"]                                         # Name
+description_p_tag, description_attr = 'p', {'itemprop': 'description'}  # Description
 img_tag, img_style = 'img', {'style': 'opacity:0'}                      # img
 
 
@@ -88,8 +88,12 @@ def fill_product_info(driver, product_url):
         soup = BeautifulSoup(response.text, "html.parser")
         main_class = soup.find(main_body_tag, class_=main_body_class)                       # MAIN BODY
 
-        name_p_element = main_class.find(name_product_tag)                                  # NAME PRODUCT
-        name_p = name_p_element.get_text() if name_p_element else None
+        name_p = ""
+        for tag in name_product_tags:
+            element = main_class.find(tag)
+            if element:
+                name_p += " " + element.get_text()
+        name_p = name_p.strip()  # Remove leading/trailing spaces
         normalized_name = normalize_product_name(name_p)
 
         description_element = main_class.find(description_p_tag, attrs=description_attr)    # DESCRIPTION PRODUCT
