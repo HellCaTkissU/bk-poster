@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 import requests
 import time
 import os
-import re
 
 # Log In
 login = 'abris@abrisplus.ru'
@@ -15,22 +14,23 @@ password = '123456'
 # Main site to tale IMG
 base_image_url = "https://www.abrisplus.ru"
 
-# Auto-fill input to boxes, dropdown and radio                    # INPUTS
-search_query = 'Другие медицинские приборы, инструменты и оборудования'                # Category
-country_option_text = "Россия"                                    # County
-your_brand = "АБРИС+"                                             # Brand
-group_input_placeholder = "Бесприборная экспресс-диагностика на наркотики".capitalize()                      # Group
-minimal_input_value = '1'                                         # Minimum quantity
-dropdown_option_text = "шт."                                      # Unit
+# Auto-fill input to boxes, dropdown, and radio                    # INPUTS
+search_query = 'Другие медицинские приборы, инструменты и оборудования'  # Category
+country_option_text = "Россия"  # Country
+your_brand = "АБРИС+"  # Brand
+group_input_placeholder = "Бесприборная экспресс-диагностика на наркотики"  # Group
+minimal_input_value = '1'  # Minimum quantity
+dropdown_option_text = "шт."  # Unit
 
 group_input_placeholder = group_input_placeholder.capitalize()
-group_input_placeholder = ' '.join([group_input_placeholder.split()[0]] + [word.lower() for word in group_input_placeholder.split()[1:]])
+group_input_placeholder = ' '.join([group_input_placeholder.split()[0]] + [word.lower() for word in
+                                                                           group_input_placeholder.split()[1:]])
 
 # divs. Take information                                                # LINKS
-main_body_tag, main_body_class = 'div', 'catalog'                       # Main body
-name_product_tags = ["h2",]             #["h2," "h1"] add double name   # Name
+main_body_tag, main_body_class = 'div', 'catalog'  # Main body
+name_product_tags = ["h2", ]  # ["h2," "h1"] add double name   # Name
 description_p_tag, description_attr = 'p', {'itemprop': 'description'}  # Description
-img_tag, img_style = 'img', {'style': 'opacity:0'}                      # img
+img_tag, img_style = 'img', {'style': 'opacity:0'}  # img
 
 
 def download_image(img_url, img_name):
@@ -39,27 +39,6 @@ def download_image(img_url, img_name):
         with open(img_name, 'wb') as f:
             for chunk in response.iter_content(1024):
                 f.write(chunk)
-
-
-def normalize_product_name(name):
-    words = re.findall(r"[\w+—-]+|[.,!?;]", name)
-
-    if words:
-        words[0] = words[0].capitalize()
-
-    normalized_words = [words[0]]
-
-    for i in range(1, len(words)):
-        word = words[i]
-        if '-' in word:
-            parts = word.split('-')
-            capitalized_parts = [part.upper() if part.isalpha() else part for part in parts]
-            word = '-'.join(capitalized_parts)
-        else:
-            word = word.lower()
-        normalized_words.append(word)
-
-    return ' '.join(normalized_words)
 
 
 def login_to_website(driver):
@@ -86,7 +65,7 @@ def fill_product_info(driver, product_url):
         # Get product information from the provided URL
         response = requests.get(product_url)
         soup = BeautifulSoup(response.text, "html.parser")
-        main_class = soup.find(main_body_tag, class_=main_body_class)                       # MAIN BODY
+        main_class = soup.find(main_body_tag, class_=main_body_class)  # MAIN BODY
 
         name_p = ""
         for tag in name_product_tags:
@@ -94,9 +73,9 @@ def fill_product_info(driver, product_url):
             if element:
                 name_p += " " + element.get_text()
         name_p = name_p.strip()  # Remove leading/trailing spaces
-        normalized_name = normalize_product_name(name_p)
+        normalized_name = name_p
 
-        description_element = main_class.find(description_p_tag, attrs=description_attr)    # DESCRIPTION PRODUCT
+        description_element = main_class.find(description_p_tag, attrs=description_attr)  # DESCRIPTION PRODUCT
         description = description_element.get_text() if description_element else None
 
         # Find the image URL
@@ -116,7 +95,6 @@ def fill_product_info(driver, product_url):
         category.click()
 
         product_name_xpath = '//input[@name="p_name"]'
-        normalized_name = normalize_product_name(name_p)
         product_name_field = driver.find_element(By.XPATH, product_name_xpath)
         product_name_field.send_keys(normalized_name)
         time.sleep(1)
@@ -208,4 +186,3 @@ def upload_multiple_products():
 
 
 upload_multiple_products()
-
