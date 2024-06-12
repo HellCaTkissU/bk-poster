@@ -16,10 +16,10 @@ password = '123456'
 base_image_url = "https://www.abrisplus.ru"
 
 # Auto-fill input to boxes, dropdown and radio                    # INPUTS
-search_query = 'Клинико-аналитические инструменты'                # Category
+search_query = 'Другие медицинские приборы, инструменты и оборудования'                # Category
 country_option_text = "Россия"                                    # County
 your_brand = "АБРИС+"                                             # Brand
-group_input_placeholder = "ПОЛУАВТОМАТИЧЕСКИЕ ИММУНОФЕРМЕНТНЫЕ АНАЛИЗАТОРЫ".capitalize()                      # Group
+group_input_placeholder = "Контейнеры для переноски пробирок".capitalize()                      # Group
 minimal_input_value = '1'                                         # Minimum quantity
 dropdown_option_text = "шт."                                      # Unit
 
@@ -27,9 +27,9 @@ group_input_placeholder = group_input_placeholder.capitalize()
 group_input_placeholder = ' '.join([group_input_placeholder.split()[0]] + [word.lower() for word in group_input_placeholder.split()[1:]])
 
 # divs. Take information                                                # LINKS
-main_body_tag, main_body_class = 'div', 'span8'                         # Main body
-name_product_tag = ("h1")                                               # Name
-description_p_tag, description_attr = 'p', {'itemprop': 'description'}  # Description
+main_body_tag, main_body_class = 'div', 'catalog'                         # Main body
+name_product_tag = "h2"                                               # Name
+description_p_tag, description_attr = 'div', {'class': 'card-details-box visible'}  # Description
 img_tag, img_style = 'img', {'style': 'opacity:0'}                      # img
 
 
@@ -44,13 +44,21 @@ def download_image(img_url, img_name):
 def normalize_product_name(name):
     words = re.findall(r"[\w+—-]+|[.,!?;]", name)
 
-    normalized_words = [word.capitalize() for word in words]
+    if words:
+        words[0] = words[0].capitalize()
 
-    for i in range(1, len(normalized_words)):
-        if '-' in normalized_words[i]:
-            parts = normalized_words[i].split('-')
-            capitalized_parts = [part.capitalize() for part in parts]
-            normalized_words[i] = '-'.join(capitalized_parts)
+    normalized_words = [words[0]]
+
+    for i in range(1, len(words)):
+        word = words[i]
+        if '-' in word:
+            parts = word.split('-')
+            capitalized_parts = [part.upper() if part.isalpha() else part for part in parts]
+            word = '-'.join(capitalized_parts)
+        else:
+            word = word.lower()
+        normalized_words.append(word)
+
     return ' '.join(normalized_words)
 
 
