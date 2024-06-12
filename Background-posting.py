@@ -19,7 +19,7 @@ base_image_url = "https://www.abrisplus.ru"
 search_query = 'Другие медицинские приборы, инструменты и оборудования'                # Category
 country_option_text = "Россия"                                    # County
 your_brand = "АБРИС+"                                             # Brand
-group_input_placeholder = "Бесприборная экспресс-диагностика на наркотики".capitalize()                      # Group
+group_input_placeholder = "Тесты для Сармат СВ".capitalize()                      # Group
 minimal_input_value = '1'                                         # Minimum quantity
 dropdown_option_text = "шт."                                      # Unit
 
@@ -28,7 +28,7 @@ group_input_placeholder = ' '.join([group_input_placeholder.split()[0]] + [word.
 
 # divs. Take information                                                # LINKS
 main_body_tag, main_body_class = 'div', 'catalog'                       # Main body
-name_product_tags = ["h2", "h1"]                                         # Name
+name_product_tags = ["h2",] # ["h2," "h1"] if u wanna add double name   # Name
 description_p_tag, description_attr = 'p', {'itemprop': 'description'}  # Description
 img_tag, img_style = 'img', {'style': 'opacity:0'}                      # img
 
@@ -51,7 +51,7 @@ def normalize_product_name(name):
 
     for i in range(1, len(words)):
         word = words[i]
-        if '-' in word:
+        if 'тир' in word:
             parts = word.split('-')
             capitalized_parts = [part.upper() if part.isalpha() else part for part in parts]
             word = '-'.join(capitalized_parts)
@@ -93,7 +93,7 @@ def fill_product_info(driver, product_url):
             element = main_class.find(tag)
             if element:
                 name_p += " " + element.get_text()
-        name_p = name_p.strip()  # Remove leading/trailing spaces
+        name_p = name_p.strip()
         normalized_name = normalize_product_name(name_p)
 
         description_element = main_class.find(description_p_tag, attrs=description_attr)    # DESCRIPTION PRODUCT
@@ -181,11 +181,20 @@ def fill_product_info(driver, product_url):
         print("Произошла ошибка при обработке товара по URL {}: {}".format(product_url, e))
 
 
+import re
+
+import re
+
+import re
+
+
 def upload_multiple_products():
     links_input = input("Введите URL'ы продуктов, разделенные пробелами: ")
-    product_urls = links_input.split()
 
-    print('\n\nRunning...')
+    product_urls = re.findall(r'https://\S+(?=https://|\s|$)', links_input)
+
+    num_products = len(product_urls)
+    print(f'\nFound {num_products} products.\n\nRunning...')
 
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
@@ -195,14 +204,17 @@ def upload_multiple_products():
 
     # Log in once
     if login_to_website(driver):
-        for product_url in product_urls:
-            fill_product_info(driver, product_url.strip())
+        for i, product_url in enumerate(product_urls, start=1):
+            if product_url.strip():
+                fill_product_info(driver, product_url.strip())
+                print(f"{i} товар успешно добавлен.")
 
-            driver.get('https://bizkim.uz/ru/add-product')
+                driver.get('https://bizkim.uz/ru/add-product')
 
     driver.quit()
 
-    print('\n\nDone!')
+    print('\nDone!')
 
 
 upload_multiple_products()
+
