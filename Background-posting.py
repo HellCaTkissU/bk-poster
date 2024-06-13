@@ -179,9 +179,30 @@ def upload_multiple_products():
             fill_product_info(driver, product_url.strip())
             print(f"Product {i} processed.")
 
+            # Open a new tab and close the current one
+            driver.execute_script("window.open('');")
+            driver.switch_to.window(driver.window_handles[-1])
             driver.get('https://bizkim.uz/ru/add-product')
+            driver.switch_to.window(driver.window_handles[0])
+            driver.close()
+            driver.switch_to.window(driver.window_handles[-1])
 
     driver.quit()
+    
+    # Log in once
+    # if login_to_website(driver):
+    #     for product_url in product_urls:
+    #         fill_product_info(driver, product_url.strip())
+    #
+    #         # Open a new tab and close the current one
+    #         driver.execute_script("window.open('');")
+    #         driver.switch_to.window(driver.window_handles[-1])
+    #         driver.get('https://bizkim.uz/ru/add-product')
+    #         driver.switch_to.window(driver.window_handles[0])
+    #         driver.close()
+    #         driver.switch_to.window(driver.window_handles[-1])
+    #
+    # driver.quit()
 
     print('\nDone!')
 
