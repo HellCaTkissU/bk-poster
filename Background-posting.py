@@ -14,11 +14,11 @@ password = '123456'
 # Main site to tale IMG
 base_image_url = "https://www.abrisplus.ru"
 
-# Auto-fill input to boxes, dropdown, and radio                    # INPUTS
+# Auto-fill input to boxes, dropdown, and radio                          # INPUTS
 search_query = 'Другие медицинские приборы, инструменты и оборудования'  # Category
 country_option_text = "Россия"  # Country
 your_brand = "АБРИС+"  # Brand
-group_input_placeholder = "Бесприборная экспресс-диагностика на наркотики"  # Group
+group_input_placeholder = "ПАКЕТЫ ДЛЯ АВТОКЛАВИРОВАНИЯ МЕДИЦИНСКИХ ОТХОДОВ".capitalize()  # Group
 minimal_input_value = '1'  # Minimum quantity
 dropdown_option_text = "шт."  # Unit
 
@@ -28,8 +28,8 @@ group_input_placeholder = ' '.join([group_input_placeholder.split()[0]] + [word.
 
 # divs. Take information                                                # LINKS
 main_body_tag, main_body_class = 'div', 'catalog'  # Main body
-name_product_tags = ["h2", ]  # ["h2," "h1"] add double name   # Name
-description_p_tag, description_attr = 'p', {'itemprop': 'description'}  # Description
+name_product_tags = ["h1"]  # ["h2," "h1"] add double name   # Name
+description_p_tag, description_attr = 'div', {'class': 'card-details-box visible'}  # Description
 img_tag, img_style = 'img', {'style': 'opacity:0'}  # img
 
 
@@ -105,6 +105,7 @@ def fill_product_info(driver, product_url):
         time.sleep(1)
 
         country_dropdown = driver.find_element(By.ID, 'select2-chosen-1')
+        time.sleep(1)
         country_dropdown.click()
         time.sleep(1)
         country_options = driver.find_elements(By.XPATH, '//ul[@id="select2-results-1"]/li[@role="presentation"]')
@@ -182,7 +183,7 @@ def upload_multiple_products():
 
     driver.quit()
 
-    print('\n\nDone!')
+    print('\nDone!')
 
 
 upload_multiple_products()
