@@ -8,17 +8,17 @@ import time
 import os
 
 # Log In
-login = 'abris@abrisplus.ru'
-password = '123456'
+login = '#! input log'
+password = '#! input pswd'
 
 # Main site to tale IMG
-base_image_url = "https://www.abrisplus.ru"
+base_image_url = "#! input url base for img"
 
 # Auto-fill input to boxes, dropdown, and radio                          # INPUTS
-search_query = 'Другие медицинские приборы, инструменты и оборудования'  # Category
-country_option_text = "Россия"  # Country
-your_brand = "АБРИС+"  # Brand
-group_input_placeholder = "ПАКЕТЫ ДЛЯ АВТОКЛАВИРОВАНИЯ МЕДИЦИНСКИХ ОТХОДОВ".capitalize()  # Group
+search_query = '#! главная категория товара'  # Category
+country_option_text = "#!"  # Country
+your_brand = "#!"  # Brand
+group_input_placeholder = "#!".capitalize()  # Group
 minimal_input_value = '1'  # Minimum quantity
 dropdown_option_text = "шт."  # Unit
 
