@@ -9,17 +9,17 @@ import os
 import re
 
 # Log In
-login = 'abris@abrisplus.ru'
-password = '123456'
+login = '#!'
+password = '#!'
 
 # Main site to tale IMG
-base_image_url = "https://www.abrisplus.ru"
+base_image_url = "#!"
 
 # Auto-fill input to boxes, dropdown and radio                    # INPUTS
-search_query = 'Клинико-аналитические инструменты'                # Category
-country_option_text = "Россия"                                    # County
-your_brand = "АБРИС+"                                             # Brand
-group_input_placeholder = "ПОЛУАВТОМАТИЧЕСКИЕ ИММУНОФЕРМЕНТНЫЕ АНАЛИЗАТОРЫ".capitalize()                      # Group
+search_query = '#!'                # Category
+country_option_text = "#!"                                    # County
+your_brand = "#!"                                             # Brand
+group_input_placeholder = "#!".capitalize()                      # Group
 minimal_input_value = '1'                                         # Minimum quantity
 dropdown_option_text = "шт."                                      # Unit
 
