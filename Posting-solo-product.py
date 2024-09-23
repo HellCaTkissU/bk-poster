@@ -9,17 +9,17 @@ import os
 import re
 
 # Переменные для логина и пароля
-login = 'abris@abrisplus.ru'
-password = '123456'
+login = '#!'
+password = '#!'
 
 # Базовый URL для изображений
-base_image_url = "https://www.abrisplus.ru"
+base_image_url = "https://www.example.ru"
 
 # Текстовые данные для поиска элементов на странице
-search_query = 'Клинико-аналитические инструменты'  # Текст для поиска категории товара
-country_option_text = "Россия"  # Текст опции выбора страны
-your_brand = "АБРИС+" #Текст для бренда
-group_input_placeholder = "Автоматические биохимические анализаторы"  # Placeholder для поля группировка
+search_query = '#!'  # Текст для поиска категории товара
+country_option_text = "#!"  # Текст опции выбора страны
+your_brand = "#!" #Текст для бренда
+group_input_placeholder = "#!"  # Placeholder для поля группировка
 minimal_input_value = '10'  # Значение для ввода минимального количества товара
 dropdown_option_text = "уница"  # Текст опции для выпадающего списка
 
